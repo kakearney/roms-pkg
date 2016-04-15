@@ -1,4 +1,13 @@
 function hp = plotromsrho(Grd, data)
+%PLOTROMSRHO Plots a rho-field variable from ROMS
+%
+% hp = plotromsrho(Grd, data)
+%
+% Input variables:
+%
+%   Grd:    grid file structure
+%
+%   data:   nxi x neta array
 
 % h = plotgrid('setup', cell(1), [],[], 'mar', 0.02);
 % h.fig.Color = 'w';
