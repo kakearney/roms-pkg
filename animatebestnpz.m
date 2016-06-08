@@ -45,11 +45,40 @@ end
 latlim = minmax(Grd.lat_rho);
 lonlim = minmax(wrapTo360(Grd.lon_rho));
 
+% Check that data files exist
+
+if ischar(hisfiles)
+    hisfiles = {hisfiles};
+end
+if ischar(stafile)
+    stafile = {stafile};
+end
+hisfiles = hisfiles(:);
+stafile = stafile(:);
+
+fexists = cellfun(@(x) exist(x,'file'), [hisfiles; stafile]);
+if ~all(fexists)
+    tmp = [hisfiles; stafile];
+    tmp = sprintf('  %s\n', tmp{~fexists});
+    error('File(s) not found:\n%s', tmp);
+end
+    
 % Station and history dimensions
 
 DimHis = collectromsdims(hisfiles, 'his', nz, Grd.h);
-DimSta = collectromsdims(stafile, 'sta', nz);
-
+if iscell(stafile)
+    STmp = cellfun(@(x) collectromsdims(x, 'sta', nz), stafile);
+    DimSta.lat_rho = STmp(1).lat_rho;
+    DimSta.lon_rho = STmp(1).lon_rho;
+    DimSta.h = STmp(1).h;
+    DimSta.ocean_time = cat(1, STmp.ocean_time);
+    DimSta.zeta = cat(2, STmp.zeta);
+    DimSta.zr = cat(3, STmp.zr);
+    DimSta.zw = cat(3, STmp.zw);
+else
+    DimSta = collectromsdims(stafile, 'sta', nz);
+end
+    
 DimHis.dz = diff(DimHis.zw, 1, 3);
 DimSta.dz = diff(DimSta.zw, 1, 1);
 
@@ -58,14 +87,19 @@ DimSta.dz = diff(DimSta.zw, 1, 1);
 isvar = strcmp({Tmp.Variables.Name}, var);
 ndim = length(Tmp.Variables(isvar).Size);
 
-tmp = cellfun(@(x) ncread(x, var), hisfiles, 'uni', 0);
+htmp = cellfun(@(x) ncread(x, var), hisfiles, 'uni', 0);
+stmp = cellfun(@(x) ncread(x, var), stafile, 'uni', 0);
 
 if ndim == 3
-    bhis = cat(3, tmp{:});       % nxi x neta x ntime 
-    bsta = ncread(stafile, var); % nstation x ntime
+    bhis = cat(3, htmp{:});       % nxi x neta x ntime 
+    bsta = cat(2, stmp{:});       % nstation x ntime
+    bsta(bsta > 1e35) = NaN;
+%     bsta = ncread(stafile, var);
 elseif ndim == 4
-    bhis = cat(4, tmp{:});       % nxi x neta x nz x ntime 
-    bsta = ncread(stafile, var); % nz x nstation x ntime
+    bhis = cat(4, htmp{:});       % nxi x neta x nz x ntime 
+    bsta = cat(3, stmp{:});       % nz x nstation x ntime
+    
+%     bsta = ncread(stafile, var); % nz x nstation x ntime
     bsta(bsta > 1e35) = NaN;
     
     bhis = bhis(:,:,iz,:) .* DimHis.dz(:,:,iz,:);  
@@ -85,11 +119,24 @@ elseif ndim == 4
     bsta = permute(bsta, [2 3 1]);
       
 end
+
 this = datetime(1900,1,1) + DimHis.ocean_time/86400;
 tsta = datetime(1900,1,1) + DimSta.ocean_time/86400;
 
+isrep = diff(this) == 0;
+this = this(~isrep);
+bhis = bhis(:,:,~isrep);
+
+isrep = diff(tsta) == 0;
+tsta = tsta(~isrep);
+bsta = bsta(:,~isrep);
+
+
 hislim = minmax(bhis);
 stalim = minmax(bsta);
+if stalim(1) == stalim(2)
+    stalim = stalim(1) + [-1 1];
+end
 
 % Set up plots
 
