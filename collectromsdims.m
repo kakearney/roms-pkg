@@ -12,7 +12,7 @@ function Dim = collectromsdims(files, type, nz, h)
 %
 %   nz:     number of depth levels in model domain
 %
-%   h:      nxi x neta array of bottom depth values
+%   h:      nxi x neta array of bottom depth values (his/avg only)
 %
 % Output variables:
 %
@@ -56,21 +56,29 @@ switch type
         
     case 'sta'
         
-        if ~ischar(files)
-            error('Only a single station file can be read at a time');
+        if ischar(files)
+           files = {files}; 
         end
         
-        S = ncreads(files, 'Vstretching', 'Vtransform', 'theta_s', 'theta_b', 'hc');
-        Dim = ncreads(files, 'lat_rho', 'lon_rho', 'h', 'ocean_time', 'zeta');
+        S = ncreads(files{1}, 'Vstretching', 'Vtransform', 'theta_s', 'theta_b', 'hc');
         
-        [zr, zw] = calcromsz(Dim.h, Dim.zeta, nz, ...
+        Dim = ncreads(files{1}, 'lat_rho', 'lon_rho', 'h', 'ocean_time', 'zeta');
+        
+        Tmp = cellfun(@(x) ncreads(x, 'ocean_time', 'zeta'), files);
+        
+        Dim.ocean_time = cat(1, Tmp.ocean_time);
+        Dim.zeta = cat(2, Dim.zeta);
+        
+        
+        [zr, zw] = cellfun(@(x) calcromsz(Dim.h, x, nz, ...
             'Vstretching', S.Vstretching, ...
             'Vtransform', S.Vtransform, ...
             'theta_s', S.theta_s, ...
             'theta_b', S.theta_b, ...
-            'hc', S.hc);
+            'hc', S.hc), {Tmp.zeta}, 'uni', 0);
         
-        Dim.zr = permute(zr, [3 1 4 2]);
-        Dim.zw = permute(zw, [3 1 4 2]);
+        Dim.zr = permute(cat(4, zr{:}), [3 1 4 2]);
+        Dim.zw = permute(cat(4, zw{:}), [3 1 4 2]);
+        
         
 end
