@@ -1,4 +1,4 @@
-function animateromsrho(grdfile, bhis, this, bsta, tsta, slat, slon)
+function h = animateromsrho(grdfile, bhis, this, bsta, tsta, slat, slon)
 %ANIMATEROMSRHO Plot interactive version of rho variables
 %
 % animateromsrho(grdfile, bhis, this, bsta, tsta, slat, slon)
