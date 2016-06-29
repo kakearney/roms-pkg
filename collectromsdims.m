@@ -1,5 +1,8 @@
-function Dim = collectromsdims(files, type, nz, h)
+function Dim = collectromsdims(files, type, nz, h, flag)
 %COLLECTROMSDIMS Read time and depth data from ROMS his, avg, or sta files
+%
+% Dim = collectromsdims(files, type, nz, h)
+% Dim = collectromsdims(files, type, nz, h, flag)
 %
 % This function read the time and depth data from ROMS history, average, or
 % stations output files, and converts to depth space.
@@ -14,6 +17,9 @@ function Dim = collectromsdims(files, type, nz, h)
 %
 %   h:      nxi x neta array of bottom depth values (his/avg only)
 %
+%   flag:   logical scalar, true to calculate zr and zw (can be
+%           time-consuming for large runs).  Default is true.
+%
 % Output variables:
 %
 %   Dim:    1 x 1 structure with the following fields:
@@ -27,6 +33,10 @@ function Dim = collectromsdims(files, type, nz, h)
 %           zw:         nxi x neta x nz+1 x nt array, depth at psi points
 
 % Copyright 2016 Kelly Kearney
+
+if nargin < 5
+    flag = true;
+end
 
 switch type
     
@@ -43,12 +53,31 @@ switch type
         t = cellfun(@(x) ncread(x, 'ocean_time'), files, 'uni', 0);
         Dim.ocean_time = cat(1, t{:});
         
-        [zr, zw] = calcromsz(h, zeta, nz, ...
-            'Vstretching', S.Vstretching, ...
-            'Vtransform', S.Vtransform, ...
-            'theta_s', S.theta_s, ...
-            'theta_b', S.theta_b, ...
-            'hc', S.hc);
+        tunit = ncreadatt(files{1}, 'ocean_time', 'units');
+        tparts = textscan(tunit, '%s since %D', 1);
+        switch lower(tparts{1}{1})
+            case 'seconds'
+                Dim.date = tparts{2} + seconds(Dim.ocean_time);
+            case 'hours'
+                Dim.date = tparts{2} + hours(Dim.ocean_time);
+            case 'days'
+                Dim.date = tparts{2} + days(Dim.ocean_time);
+            otherwise
+                warning('Could not parse reference time');
+                Dim.date = [];
+        end
+        
+        if flag
+            [zr, zw] = calcromsz(h, zeta, nz, ...
+                'Vstretching', S.Vstretching, ...
+                'Vtransform', S.Vtransform, ...
+                'theta_s', S.theta_s, ...
+                'theta_b', S.theta_b, ...
+                'hc', S.hc);
+        else
+            zr = [];
+            zw = [];
+        end
         
         Dim.zeta = zeta;
         Dim.zr = zr;
@@ -69,16 +98,34 @@ switch type
         Dim.ocean_time = cat(1, Tmp.ocean_time);
         Dim.zeta = cat(2, Dim.zeta);
         
+        tunit = ncreadatt(files{1}, 'ocean_time', 'units');
+        tparts = textscan(tunit, '%s since %D', 1);
+        switch lower(tparts{1}{1})
+            case 'seconds'
+                Dim.date = tparts{2} + seconds(Dim.ocean_time);
+            case 'hours'
+                Dim.date = tparts{2} + hours(Dim.ocean_time);
+            case 'days'
+                Dim.date = tparts{2} + days(Dim.ocean_time);
+            otherwise
+                warning('Could not parse reference time');
+                Dim.date = [];
+        end
         
-        [zr, zw] = cellfun(@(x) calcromsz(Dim.h, x, nz, ...
-            'Vstretching', S.Vstretching, ...
-            'Vtransform', S.Vtransform, ...
-            'theta_s', S.theta_s, ...
-            'theta_b', S.theta_b, ...
-            'hc', S.hc), {Tmp.zeta}, 'uni', 0);
         
-        Dim.zr = permute(cat(4, zr{:}), [3 1 4 2]);
-        Dim.zw = permute(cat(4, zw{:}), [3 1 4 2]);
-        
+        if flag
+            [zr, zw] = cellfun(@(x) calcromsz(Dim.h, x, nz, ...
+                'Vstretching', S.Vstretching, ...
+                'Vtransform', S.Vtransform, ...
+                'theta_s', S.theta_s, ...
+                'theta_b', S.theta_b, ...
+                'hc', S.hc), {Tmp.zeta}, 'uni', 0);
+            
+            Dim.zr = permute(cat(4, zr{:}), [3 1 4 2]);
+            Dim.zw = permute(cat(4, zw{:}), [3 1 4 2]);
+        else
+            Dim.zr = [];
+            Dim.zw = [];
+        end
         
 end
