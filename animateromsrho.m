@@ -38,6 +38,21 @@ if ndims(bhis) > 3 || ~isequal(sz(1:2), [nxi neta])
     error('bhis must be nxi x neta x nt array');
 end
 
+% Extract "station" data if not provided separately
+
+ell = referenceEllipsoid('earth');
+distfun = @(ltln1, ltln2) distance(ltln1(:,1), ltln1(:,2), ltln2(:,1), ltln2(:,2), ell);
+if isempty(bsta)
+    idx = knnsearch([Grd.lat_rho(:) Grd.lon_rho(:)], [slat slon], 'Distance', distfun);
+    [ixi,ieta] = ind2sub(size(Grd.lat_rho), idx);
+    nstat = length(slat);
+    bsta = nan(nstat, length(this));
+    for ii = 1:nstat
+        bsta(ii,:) = bhis(ixi(ii),ieta(ii),:);
+    end
+    tsta = this;
+end
+
 % Check for time duplicates
 
 isrep = diff(this) == 0;
