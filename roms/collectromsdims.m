@@ -48,7 +48,7 @@ switch type
         S = ncreads(files{1}, 'Vstretching', 'Vtransform', 'theta_s', 'theta_b', 'hc');
         
         zeta = cellfun(@(x) ncread(x, 'zeta'), files, 'uni', 0);
-        zeta = cat(3, zeta{:});
+        Dim.zeta = cat(3, zeta{:});
         
         t = cellfun(@(x) ncread(x, 'ocean_time'), files, 'uni', 0);
         Dim.ocean_time = cat(1, t{:});
@@ -68,20 +68,32 @@ switch type
         end
         
         if flag
-            [zr, zw] = calcromsz(h, zeta, nz, ...
+            [zr, zw] = cellfun(@(x) calcromsz(h, x, nz, ...
                 'Vstretching', S.Vstretching, ...
                 'Vtransform', S.Vtransform, ...
                 'theta_s', S.theta_s, ...
                 'theta_b', S.theta_b, ...
-                'hc', S.hc);
+                'hc', S.hc), zeta, 'uni', 0);
+            Dim.zr = cat(4, zr{:});
+            Dim.zw = cat(4, zw{:});
+            
+%             tic
+%             [zr, zw] = calcromsz(h, Dim.zeta, nz, ...
+%                 'Vstretching', S.Vstretching, ...
+%                 'Vtransform', S.Vtransform, ...
+%                 'theta_s', S.theta_s, ...
+%                 'theta_b', S.theta_b, ...
+%                 'hc', S.hc);
+%             toc
+
         else
-            zr = [];
-            zw = [];
+            Dim.zr = [];
+            Dim.zw = [];
         end
         
-        Dim.zeta = zeta;
-        Dim.zr = zr;
-        Dim.zw = zw;
+%         Dim.zeta = zeta;
+%         Dim.zr = zr;
+%         Dim.zw = zw;
         
     case 'sta'
         
@@ -97,6 +109,7 @@ switch type
         
         Dim.ocean_time = cat(1, Tmp.ocean_time);
         Dim.zeta = cat(2, Dim.zeta);
+        
         
         tunit = ncreadatt(files{1}, 'ocean_time', 'units');
         tparts = textscan(tunit, '%s since %D', 1);
