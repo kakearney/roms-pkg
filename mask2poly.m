@@ -29,7 +29,7 @@ function [xpoly,ypoly] = mask2poly(mx, my, mask)
 
 % Check input
 
-if isvector(mx) & isvector(my)
+if isvector(mx) && isvector(my)
     [mx, my] = meshgrid(mx, my);
 end
 
