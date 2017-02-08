@@ -96,9 +96,18 @@ h.ln = plot(h.tsax, tsta, bsta);
 h.ref = plot(tsta([1 1]), stalim, 'k');
 
 set(h.sta, 'MarkerEdgeColor', 'w');
-set(h.sta, {'MarkerFaceColor'}, get(h.ln, 'color'));
+if isscalar(h.ln)
+    set(h.sta, 'MarkerFaceColor', get(h.ln, 'color'));
+else
+    set(h.sta, {'MarkerFaceColor'}, get(h.ln, 'color'));
+end
 
-set(h.tsax, 'ylim', stalim, 'xlim', datenum(minmax(tsta)));
+if verLessThan('matlab', '9.1') % R2016b
+    set(h.tsax, 'ylim', stalim, 'xlim', datenum(minmax(tsta)));
+else
+    set(h.tsax, 'ylim', stalim, 'xlim', minmax(tsta));
+    
+end
 
 set(h.tsax, 'ButtonDownFcn', @clickts);
 
@@ -133,7 +142,11 @@ set(h.fig, 'DeleteFcn', @closefig);
         [~,ista] = min(abs(t - tsta));
         
         set(h.pc, 'cdata', padarray(bhis(2:end-1,2:end-1,ihis), [1 1], NaN, 'post'));
-        set(h.ref, 'xdata', datenum(tsta([ista ista])));
+        if verLessThan('matlab', '9.1')
+            set(h.ref, 'xdata', datenum(tsta([ista ista])));
+        else
+            set(h.ref, 'xdata', tsta([ista ista]));
+        end
         if ~strcmp(h.date.String, char(t))
             h.date.String = char(t);
         end
