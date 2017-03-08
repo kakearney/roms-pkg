@@ -1,7 +1,7 @@
 function Data = ncreads(file, varargin)
 %NCVARSGET Read several variables from a netcdf file
 %
-% Data = ncvarsget(file, var1, var2, ...)
+% Data = ncreads(file, var1, var2, ...)
 %
 % This function reads multiple variables from a netcdf file.  It is just a
 % wrapper function for ncread.
