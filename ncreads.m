@@ -106,6 +106,10 @@ end
 % Read data
 
 for iv = 1:nvar
-    [~,dloc] = ismember({Info.Variables(vloc(iv)).Dimensions.Name}, {Info.Dimensions.Name});
-    Data.(varnames{iv}) = ncread(file, varnames{iv}, start(dloc), count(dloc), stride(dloc));
+    if isempty(Info.Variables(vloc(iv)).Dimensions)
+        Data.(varnames{iv}) = ncread(file, varnames{iv});
+    else
+        [~,dloc] = ismember({Info.Variables(vloc(iv)).Dimensions.Name}, {Info.Dimensions.Name});
+        Data.(varnames{iv}) = ncread(file, varnames{iv}, start(dloc), count(dloc), stride(dloc));
+    end
 end
