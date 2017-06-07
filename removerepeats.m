@@ -1,4 +1,46 @@
 function [A, x] = removerepeats(A, var, files, varargin)
+%REMOVEREPEATS Removes non-unique values along one dimensions
+%
+% [B, x] = removerepeats(A, var, files, ...)
+%
+% Ths function is intended as a companion function to ncreadsseries.  It
+% allows one to remove any repeated values along a dimension, as determined
+% by the values in a one-dimensional variable along that dimension.  
+%
+% My original intent was to add this functionality to ncreadsseries itself,
+% but this is difficult due to the flexibility of netCDF files, where
+% dimensions don't necessarily include a one-to-one match with a particular
+% variable.  This function is primarily intended to work along the
+% unlimited dimension along which ncreadsseries data was concatenated, and
+% has not been throroughly.  
+%
+% Input variables:
+%
+%   A:      structure of netCDF data (output of ncreads or ncreadsseries,
+%           or similar) 
+%
+%   var:    name of variable a one-dimensional variable in the file on
+%           which the unique calculation will be based.  Data in A along
+%           this dimension should not be subset (i.e. should not have been 
+%           read in with a start-count-stride modifier).
+%
+%   files:  files from which the data in A were read.
+%
+% Optional input variables (passed as parameter value pairs):
+%
+%   pos:    position (occurrence) to keep in data ('first' or 'last').  
+%           Default: 'last'
+%
+% Output variables:
+%
+%   B:      structure of netCDF data, matching A but modified to remove
+%           data corresponding to repeats along the indicated dimension.
+%           Variables that do not include that dimension will be
+%           unmodified.
+%
+%   x:      values of var, with repeats removed.
+
+% Copyright 2017 Kelly Kearney
 
 p = inputParser;
 p.addParameter('pos', 'last', @(x) validateattributes(x, {'char','string'}));
