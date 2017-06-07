@@ -1,11 +1,12 @@
-function Data = ncreads(file, varargin)
-%NCREADS Read several variables from a netcdf file
+function Data = ncreadsseries(files, varargin)
+%NCREADSSERIES Read several variables from a series of netcdf files
 %
-% Data = ncreads(file, var1, var2, ...)
-% Data = ncreads(file, Scs, var1, var2, ...)
+% Data = ncreadsseries(files, var1, var2, ...)
+% Data = ncreadsseries(files, Scs, var1, var2, ...)
 %
-% This function reads multiple variables from a netcdf file.  It is just a
-% wrapper function for ncread.
+% This function reads multiple variables from a series of netcdf files,
+% assuming those files share a single unlimited dimension along which
+% certain variables can be concatenated.
 %
 % Input variables:
 %
@@ -20,7 +21,8 @@ function Data = ncreads(file, varargin)
 %   Scs:    1 x 1 structure of start-count-stride values.  Field names
 %           should match names of dimension variables in the file.  If
 %           provided, any variable with that dimension will be subset as
-%           described.
+%           described.  Can include any dimension variable except that
+%           corresponding to the record (unlimited) dimension.
 %         
 % Output variables:
 %
@@ -31,8 +33,9 @@ function Data = ncreads(file, varargin)
 
 % Parse input
 
-if ~exist(file, 'file')
-    error('File not found');
+isfile = cellfun(@(x) exist(x,'file'), files);
+if ~all(isfile)
+    error('File(s) not found');
 end
 
 isscs = cellfun(@isstruct, varargin);
@@ -44,7 +47,7 @@ else
     varnames = varargin;
 end
 
-Info = ncinfo(file);
+Info = ncinfo(files{1});
 if isempty(varnames)
     varnames = {Info.Variables.Name};
 end
@@ -53,8 +56,26 @@ if ~iscellstr(varnames)
     error('Variables name inputs must be passed as strings or character arrays');
 end
 
-
 scsfld = fieldnames(Scs);
+
+% Find the unlimited dimension
+
+isunlim = [Info.Dimensions.Unlimited];
+
+if ~any(isunlim)
+    error('No unlimited dimension found in these files');
+end
+if sum(isunlim) > 1
+    error('Multiple unlimited dimensions found in these files');
+end
+    
+unlimdim = Info.Dimensions(isunlim).Name;
+
+if ismember(unlimdim, scsfld)
+    warning('Cannot subset along unlimited dimension %s', unlimdim);
+    Scs = rmfield(Scs, unlimdim);
+end
+
 [tf,loc] = ismember(scsfld, {Info.Dimensions.Name});
 if ~all(tf)
     str = sprintf('%s,', scsfld{~tf});
@@ -111,10 +132,39 @@ end
 % Read data
 
 for iv = 1:nvar
-    if isempty(Info.Variables(vloc(iv)).Dimensions)
-        Data.(varnames{iv}) = ncread(file, varnames{iv});
+    
+    % Does this variable include the unlimited dimension?
+    
+    nodim = isempty(Info.Variables(vloc(iv)).Dimensions);
+    hasdim = ~nodim && ismember(unlimdim, {Info.Variables(vloc(iv)).Dimensions.Name});
+    
+    if hasdim
+        nfl = length(files);
     else
-        [~,dloc] = ismember({Info.Variables(vloc(iv)).Dimensions.Name}, {Info.Dimensions.Name});
-        Data.(varnames{iv}) = ncread(file, varnames{iv}, start(dloc), count(dloc), stride(dloc));
+        nfl = 1;
     end
+    
+    % Read data from all files (or just one for non-unlimited-dim variables)
+    
+    for ifl = nfl:-1:1
+        if isempty(Info.Variables(vloc(iv)).Dimensions)
+            Data.(varnames{iv}){ifl} = ncread(files{ifl}, varnames{iv});
+        else
+            [~,dloc] = ismember({Info.Variables(vloc(iv)).Dimensions.Name}, {Info.Dimensions.Name});
+            Data.(varnames{iv}){ifl} = ncread(files{ifl}, varnames{iv}, start(dloc), count(dloc), stride(dloc));
+        end
+    end
+    
+    % Concatenate if necessary
+    
+    if hasdim
+        [~,uloc] = ismember(unlimdim, {Info.Variables(vloc(iv)).Dimensions.Name});
+        Data.(varnames{iv}) = cat(uloc, Data.(varnames{iv}){:});
+    else
+        Data.(varnames{iv}) = Data.(varnames{iv}){1};
+    end
+        
 end
+
+
+
