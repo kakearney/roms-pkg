@@ -1,5 +1,5 @@
 function Data = ncreads(file, varargin)
-%NCVARSGET Read several variables from a netcdf file
+%NCREADS Read several variables from a netcdf file
 %
 % Data = ncreads(file, var1, var2, ...)
 % Data = ncreads(file, Scs, var1, var2, ...)
@@ -48,6 +48,11 @@ Info = ncinfo(file);
 if isempty(varnames)
     varnames = {Info.Variables.Name};
 end
+
+if ~iscellstr(varnames)
+    error('Variables name inputs must be passed as strings or character arrays');
+end
+
 
 scsfld = fieldnames(Scs);
 [tf,loc] = ismember(scsfld, {Info.Dimensions.Name});
