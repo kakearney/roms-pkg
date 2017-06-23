@@ -52,8 +52,6 @@ p.addParameter('theta_s',     5,   @(x) validateattributes(x, {'numeric'}, {'sca
 p.addParameter('theta_b',     0.4, @(x) validateattributes(x, {'numeric'}, {'scalar'}));
 p.addParameter('hc',         10,   @(x) validateattributes(x, {'numeric'}, {'scalar'}));
 
-p.KeepUnmatched = true;
-
 p.parse(varargin{:});
 Opt = p.Results;
 
