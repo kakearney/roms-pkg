@@ -156,7 +156,14 @@ set(h.fig, 'DeleteFcn', @closefig);
 
     function clickts(h, ~)
         xy = get(h, 'CurrentPoint');
-        updatetime(datetime(xy(1,1), 'convertfrom', 'datenum'));  
+        xlim = datenum(h.XLim);
+        if xy(1,1) >= xlim(1) & xy(1,1) <= xlim(2) % is datenum
+            updatetime(datetime(xy(1,1), 'convertfrom', 'datenum')); 
+        else % is pixels?
+            xnlim = h.XAxis.NumericLimits; % undocumented
+            tnew = interp1(xnlim, h.XLim, xy(1,1));
+            updatetime(tnew);
+        end
     end
 
     function animatetime(src, ev)
