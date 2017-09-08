@@ -49,7 +49,7 @@ switch lower(tparts{1}{1})
         dt = tparts{2} + minutes(t);
     case 'hours'
         dt = tparts{2} + hours(t);
-    case 'days'
+    case {'days', 'day'}
         dt = tparts{2} + days(t);
     otherwise
         warning('Could not parse reference time');
