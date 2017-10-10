@@ -1,4 +1,4 @@
-function h = animateromsrho(grdfile, bhis, this, bsta, tsta, slat, slon)
+function h = animateromsrho(grdfile, bhis, this, varargin) %bsta, tsta, slat, slon)
 %ANIMATEROMSRHO Plot interactive version of rho variables
 %
 % animateromsrho(grdfile, bhis, this, bsta, tsta, slat, slon)
@@ -17,6 +17,20 @@ function h = animateromsrho(grdfile, bhis, this, bsta, tsta, slat, slon)
 % Check data
 %--------------------
 
+% Parse inputs
+
+p = inputParser;
+p.addOptional('tsta', [], @(x) validateattributes(x, {'datetime'}, {'vector'}));
+p.addOptional('bsta', [], @(x) validateattributes(x, {'numeric'}, {}));
+p.addOptional('slat', [], @(x) validateattributes(x, {'numeric'}, {'<=', 90, '>=', -90}));
+p.addOptional('slon', [], @(x) validateattributes(x, {'numeric'}, {'<=', 360, '>=', -180}));
+p.parse(varargin{:});
+
+tsta = p.Results.tsta;
+bsta = p.Results.bsta;
+slat = p.Results.slat;
+slon = p.Results.slon;
+
 % Grid file
 
 if isstruct(grdfile)
@@ -29,6 +43,15 @@ end
 
 latlim = minmax(Grd.lat_rho);
 lonlim = minmax(wrapTo360(Grd.lon_rho));
+
+% Fill defaults where necessary
+
+if isempty(slat)
+    slat = mean(Grd.lat_rho(:));
+end
+if isempty(slon)
+    slon = mean(Grd.lon_rho(:));
+end
 
 % Check data size
 
@@ -65,8 +88,8 @@ bsta = bsta(:,~isrep);
 
 % Data limits
 
-hislim = minmax(bhis);
-stalim = minmax(bsta);
+hislim = minmax(bhis(~isinf(bhis)));
+stalim = minmax(bsta(~isinf(bsta)));
 if stalim(1) == stalim(2)
     stalim = stalim(1) + [-1 1];
 end
@@ -76,6 +99,15 @@ end
 %--------------------
 
 h.fig = figure('color', 'w');
+
+% Timeseries axis
+
+h.tsax  = axes('position', [0.05 0.05 0.9 0.1], 'box', 'on');
+hold on;
+h.ln = plot(h.tsax, tsta, bsta);
+h.ref = plot(tsta([1 1]), stalim, 'k');
+
+% Map axis
 
 h.mapax = axes('position', [0.05 0.15 0.9 0.8]);
 worldmap(latlim, lonlim);
@@ -90,10 +122,6 @@ set(h.mapax, 'clim', hislim);
 lim = getm(h.mapax, 'maplatlimit');
 setm(h.mapax, 'flinewidth', 1, 'mlabelparallel', lim(2));
 
-h.tsax  = axes('position', [0.05 0.05 0.9 0.1], 'box', 'on');
-hold on;
-h.ln = plot(h.tsax, tsta, bsta);
-h.ref = plot(tsta([1 1]), stalim, 'k');
 
 set(h.sta, 'MarkerEdgeColor', 'w');
 if isscalar(h.ln)
@@ -110,6 +138,8 @@ else
 end
 
 set(h.tsax, 'ButtonDownFcn', @clickts);
+
+% Buttons
 
 pos = getpos(h.fig);
 h.play = uicontrol('style', 'pushbutton', 'string', 'Play', ...
