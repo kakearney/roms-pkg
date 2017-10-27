@@ -1,15 +1,40 @@
 function h = animateromsrho(grdfile, bhis, this, varargin) %bsta, tsta, slat, slon)
 %ANIMATEROMSRHO Plot interactive version of rho variables
 %
-% animateromsrho(grdfile, bhis, this, bsta, tsta, slat, slon)
-% animateromsrho(Grd,     bhis, this, bsta, tsta, slat, slon)
+% animateromsrho(grdfile, bhis, this)
+% animateromsrho(Grd,     bhis, this)
+% h = animateromsrho(Grd, bhis, this, p1, v1, ...)
 %
 % This function creates an interactive viewer that animates the spatial
 % distriubtion of any ROMS rho variable.
 %
 % Input variables:
 %
-
+%   grdfile:    path to roms grid file
+%
+%   Grd:        ROMS grid file structure array (see ncreads)
+%
+%   bhis:       nxi x neta x nt array of values to be animated
+%
+%   this:       nt x 1 array of datetimes corresponding to values to be
+%               animated
+%
+% Optional input variables (passed as parameter/value pairs):
+%
+%   slat:       latitude of stations where timeseries should be
+%               extracted/plotted
+%
+%   slon:       longitude of stations where timeseries should be
+%               extracted/plotted
+%
+%   bsta:       nsta x ntsta array, timeseries corresponding to discrete
+%               stations (if not included, values will be pulled from
+%               nearest history grid cell)
+%
+%   tsta:       btsta x 1 array, datestimes corresponding to bsta
+%               timeseries
+%
+%   
 
 % Copyright 2016 Kelly Kearney
 
