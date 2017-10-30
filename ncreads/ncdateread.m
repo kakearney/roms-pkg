@@ -57,7 +57,7 @@ switch lower(tparts{1}{1})
 end
 
 if nargout > 2
-    unit = tparts{1};
+    unit = tparts{1}{1};
 end
 if nargout > 3
     refdate = tparts{2};
