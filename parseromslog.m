@@ -1,4 +1,4 @@
-function Log = parseromslog(file)
+function Log = parseromslog(file, varargin)
 %PARSEROMSLOG Parse data from ROMS standard output
 %
 % The ROMS model prints several diagnostic variables (energy, basin volume,
@@ -9,6 +9,13 @@ function Log = parseromslog(file)
 % Input variables:
 %
 %   file:       name of text file where ROMS standard output was saved.
+%
+% Optional variables:
+%
+%   readsteps:  logical scalar, true to read time-stepping data (i.e. main
+%               output table)
+%
+%   readcputime:logical scalar, true to read CPU useage table 
 %
 % Output variables:
 %
@@ -33,6 +40,14 @@ function Log = parseromslog(file)
 %                           variable name restrictions. A Date column is
 %                           added that converts the Day+Time fields to a
 %                           datetime based on the model reference time.
+
+
+p = inputParser;
+p.addParameter('readsteps', true);
+p.addParameter('readcputime', true);
+p.parse(varargin{:});
+
+Opt = p.Results;
 
 % Copyright 2017 Kelly Kearney
 
@@ -60,27 +75,30 @@ Log.etime = datetime(strtrim(strrep(txt{idx}, str, '')), ...
 
 % Parse CPU time for various tasks
 
-str1 = ' Nonlinear model elapsed time profile:';
-str2 = ' Nonlinear model message Passage profile:';
-str3 = ' All percentages are with respect to total time';
+if Opt.readcputime
 
-idx1 = find(startsWith(txt, str1));
-idx2 = find(startsWith(txt, str2));
-idx3 = find(startsWith(txt, str3));
+    str1 = ' Nonlinear model elapsed time profile:';
+    str2 = ' Nonlinear model message Passage profile:';
+    str3 = ' All percentages are with respect to total time';
 
-txt1 = txt((idx1+2):(idx2-3));
-txt2 = txt((idx2+2):(idx3-3));
+    idx1 = find(startsWith(txt, str1));
+    idx2 = find(startsWith(txt, str2));
+    idx3 = find(startsWith(txt, str3));
 
-tmp = regexp([txt1; txt2], '^([^\.]*)\s*\.*\s*([\d\.]*)', 'tokens', 'once');
-tmp = cat(1, tmp{:});
+    txt1 = txt((idx1+2):(idx2-3));
+    txt2 = txt((idx2+2):(idx3-3));
 
-% if ii == 1 && jj == 1
-%     cpucats = tmp(:,1);
-%     ncat = length(cpucats);
-%     cputime = nan(nnode, nrst, ncat);
-% end
+    tmp = regexp([txt1; txt2], '^([^\.]*)\s*\.*\s*([\d\.]*)', 'tokens', 'once');
+    tmp = cat(1, tmp{:});
 
-Log.cputime = table(strtrim(tmp(:,1)), cellfun(@str2double, tmp(:,2)), 'VariableNames', {'Process', 'cpu_seconds'});
+    % if ii == 1 && jj == 1
+    %     cpucats = tmp(:,1);
+    %     ncat = length(cpucats);
+    %     cputime = nan(nnode, nrst, ncat);
+    % end
+
+    Log.cputime = table(strtrim(tmp(:,1)), cellfun(@str2double, tmp(:,2)), 'VariableNames', {'Process', 'cpu_seconds'});
+end
 
 % A few time-related parameters
 
@@ -100,33 +118,38 @@ Log.dt = seconds(str2double(tmp{1}));
 
 % Main table
 
-idx = find(strncmp(txt, '   STEP   Day HH:MM:SS', 22));
-cols = txt{idx};
+if Opt.readsteps
 
-txt = txt((idx+2):end);
-isemp = cellfun(@(x) isempty(strtrim(x)), txt);
-idx = find(isemp, 1);
-txt = txt(1:(idx-1));
+    idx = find(strncmp(txt, '   STEP   Day HH:MM:SS', 22));
+    cols = txt{idx};
 
-isdata = regexpfound(txt, '^\s*\d');
+    txt = txt((idx+2):end);
+    isemp = cellfun(@(x) isempty(strtrim(x)), txt);
+    idx = find(isemp, 1);
+    txt = txt(1:(idx-1));
 
-tmpfile = [tempname '.txt'];
-fid = fopen(tmpfile, 'wt');
-fprintf(fid, '%s\n', txt{isdata});
-fclose(fid);
+    isdata = regexpfound(txt, '^\s*\d');
 
-cols = regexp(strtrim(cols), '\s*', 'split');
-istime = strcmp(cols, 'HH:MM:SS');
-cols{istime} = 'Time';
+    tmpfile = [tempname '.txt'];
+    fid = fopen(tmpfile, 'wt');
+    fprintf(fid, '%s\n', txt{isdata});
+    fclose(fid);
 
-logtbl = readtable(tmpfile, 'ReadVariableNames', false);
-logtbl.Properties.VariableNames = cols;
+    cols = regexp(strtrim(cols), '\s*', 'split');
+    istime = strcmp(cols, 'HH:MM:SS');
+    cols{istime} = 'Time';
 
-tdur = duration(hour(datetime(logtbl.Time)), ...
-              minute(datetime(logtbl.Time)), ...
-              second(datetime(logtbl.Time)));
-          
-logtbl.Date = Log.timeref + days(logtbl.Day) + tdur;
+    logtbl = readtable(tmpfile, 'ReadVariableNames', false);
+    logtbl.Properties.VariableNames = cols;
 
-Log.steps = logtbl;
+    tdur = logtbl.Time;
+
+    % tdur = duration(hour(datetime(logtbl.Time)), ...
+    %               minute(datetime(logtbl.Time)), ...
+    %               second(datetime(logtbl.Time)));
+
+    logtbl.Date = Log.timeref + days(logtbl.Day) + tdur;
+
+    Log.steps = logtbl;
+end
 
