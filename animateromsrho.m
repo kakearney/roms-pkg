@@ -117,6 +117,8 @@ hislim = minmax(bhis(~isinf(bhis)));
 stalim = minmax(bsta(~isinf(bsta)));
 if stalim(1) == stalim(2)
     stalim = stalim(1) + [-1 1];
+elseif any(isnan(stalim))
+    stalim = [-1 1];
 end
 
 %--------------------
