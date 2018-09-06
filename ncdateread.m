@@ -33,7 +33,13 @@ if verLessThan('matlab', '8.4.0')
     error('This function requires R2014b or later (relies on datetime and duration objects)');
 end
 
-t = ncread(file, var);
+if iscell(file)
+    t = cellfun(@(x) ncread(x, var), file, 'uni', 0);
+    t = cat(1, t{:});
+    file = file{1};
+else
+    t = ncread(file, var);
+end
 
 tunit = ncreadatt(file, var, 'units');
 tparts = textscan(tunit, '%s since %D', 1);
