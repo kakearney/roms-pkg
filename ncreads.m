@@ -32,7 +32,12 @@ function Data = ncreads(file, varargin)
 % Parse input
 
 if ~exist(file, 'file')
-    error('File not found');
+    try
+        ncid = netcdf.open(file);
+        netcdf.close(ncid);
+    catch
+        error('File does not exist locally and could not be reached to open; check filename for typos');
+    end
 end
 
 isscs = cellfun(@isstruct, varargin);
