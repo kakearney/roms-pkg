@@ -70,8 +70,64 @@ Log.stime = datetime(txt{idx+1}, 'inputformat', ...
 str = ' ROMS/TOMS: DONE...';
 idx = find(startsWith(txt, str));
 
-Log.etime = datetime(strtrim(strrep(txt{idx}, str, '')), ...
-    'inputformat', 'eeee - MMMM d, yyyy - h:mm:ss a');
+if ~isempty(idx)
+    Log.etime = datetime(strtrim(strrep(txt{idx}, str, '')), ...
+        'inputformat', 'eeee - MMMM d, yyyy - h:mm:ss a');
+else
+    Log.etime = NaT(0);
+end
+
+% Parse parameters
+
+isparamtable = contains(txt, 'Parameters, Grid:');
+idx = find(isparamtable);
+
+isemp = @(x) isempty(x) || (ischar(x) & all(isspace(x)));
+
+for ii = 1:length(idx)
+    tmp = regexp(txt{idx(ii)}, '(\w*) Parameters, Grid: (\d*)', 'tokens', 'once');
+    Log.paramtbl(ii).type = tmp{1};
+    Log.paramtbl(ii).grid = str2double(tmp{2});
+    
+    idxstart = idx(ii)+3;
+    idxend = find(cellfun(isemp, txt(idxstart:end)), 1)+idx(ii);
+    tbltxt = txt(idxstart:idxend);
+    
+    tbltxt = strvcat(tbltxt{:});
+    Log.paramtbl(ii).data = tbltxt;
+    
+    % phys grid 1: 11 18 54
+    % bio  grid 1: 11 16 47
+    % bio  grid 0: 11 16 71
+    % ice  grid 1: 11 16 48 (extra line skip at top)
+    % stat grid 1: 11 18 
+    
+    c1 = 11;
+    switch Log.paramtbl(ii).type
+        case {'Ice'}
+            c2 = 16;
+            tbltxt = tbltxt(2:end);  
+        case {'Physical', 'Stations'}
+            c2 = 18;
+        case {'Biology'}
+            c2 = 16;
+        otherwise
+            error('New type of parameter table');
+    end
+    val  = strtrim(cellstr(tbltxt(:,1:c1)));
+    var  = strtrim(cellstr(tbltxt(:,c1+(1:c2))));
+    desc = strtrim(cellstr(tbltxt(:,(c1+c2+1):size(tbltxt,2))));
+   
+    iscont = cellfun(@isempty,val) & cellfun(@isempty,var);
+    idxc = find(iscont);
+    for ic = 1:length(idxc)
+        desc{idxc(ic)-1} = sprintf('%s %s', desc{idxc(ic)-1:idxc(ic)});
+    end
+    
+    Log.paramtbl(ii).data = table(var(~iscont), val(~iscont), desc(~iscont), ...
+        'variablenames', {'Var', 'Value', 'Description'});
+end
+
 
 % Parse CPU time for various tasks
 
@@ -85,19 +141,24 @@ if Opt.readcputime
     idx2 = find(startsWith(txt, str2));
     idx3 = find(startsWith(txt, str3));
 
-    txt1 = txt((idx1+2):(idx2-3));
-    txt2 = txt((idx2+2):(idx3-3));
+    if isempty(idx1) % Run terminated by outside process
+        Log.cputime = [];
+    else
+        txt1 = txt((idx1+2):(idx2-3));
+        txt2 = txt((idx2+2):(idx3-3));
 
-    tmp = regexp([txt1; txt2], '^([^\.]*)\s*\.*\s*([\d\.]*)', 'tokens', 'once');
-    tmp = cat(1, tmp{:});
+        tmp = regexp([txt1; txt2], '^([^\.]*)\s*\.*\s*([\d\.]*)', 'tokens', 'once');
+        tmp = cat(1, tmp{:});
 
-    % if ii == 1 && jj == 1
-    %     cpucats = tmp(:,1);
-    %     ncat = length(cpucats);
-    %     cputime = nan(nnode, nrst, ncat);
-    % end
+        % if ii == 1 && jj == 1
+        %     cpucats = tmp(:,1);
+        %     ncat = length(cpucats);
+        %     cputime = nan(nnode, nrst, ncat);
+        % end
 
-    Log.cputime = table(strtrim(tmp(:,1)), cellfun(@str2double, tmp(:,2)), 'VariableNames', {'Process', 'cpu_seconds'});
+        Log.cputime = table(strtrim(tmp(:,1)), cellfun(@str2double, tmp(:,2)), ...
+            'VariableNames', {'Process', 'cpu_seconds'});
+    end
 end
 
 % A few time-related parameters
@@ -128,7 +189,7 @@ if Opt.readsteps
     idx = find(isemp, 1);
     txt = txt(1:(idx-1));
 
-    isdata = regexpfound(txt, '^\s*\d');
+    isdata = ~contains(txt, 'NaN') & regexpfound(txt, '^\s*\d');
 
     tmpfile = [tempname '.txt'];
     fid = fopen(tmpfile, 'wt');
