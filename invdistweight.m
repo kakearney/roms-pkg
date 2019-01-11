@@ -119,6 +119,7 @@ if any(isnan(In.uobs))
     dists = dists(~isn,:);
 end
 
+        
 w = 1./(dists.^In.p);
 wu = bsxfun(@times, w, In.uobs);
 

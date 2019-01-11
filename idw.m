@@ -1,10 +1,11 @@
-function u = idw(uobs, d, p)
+function u = idw(uobs, d, p, dmax)
 %IDW Inverse distance weighting calc
 %
 % This function performs an inverse distance weighting interpolation,
 % assuming all distance values have been pre-caculated.  
 %
 % u = idw(uobs, d, p)
+% u = idw(uobs, d, p, dmax)
 %
 % Input variables:
 %
@@ -23,8 +24,12 @@ function u = idw(uobs, d, p)
 
 nd = ndims(uobs);
 
-w = 1./d.^p;
-
+if nargin > 3
+    w = (max(0, dmax - d)./(dmax .* d)).^(1/p);
+else
+    w = 1./d.^p;
+end
+    
 wsum = nansum(w,nd);
 
 wu = w .* uobs;
