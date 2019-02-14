@@ -1,17 +1,17 @@
 function dt = ncdatelim(files, var)
 %NCDATELIM Read first and last date from a netcdf file
 %
-%  dt = ncdatelim(files, var) 
+%  tlim = ncdatelim(files, var) 
 %
 % Input variables:
 %
-%   files:  string or cell array of strings, file name(s)
+%   files:  string/char array or cell array of strings, file name(s)
 %
-%   var:    string, name of time variables
+%   var:    string, name of time variable
 %
 % Output variables:
 %
-%   dt:     n x 2 datetime array, where n is number of files
+%   tlim:   n x 2 datetime array, where n is number of files
 
 % Copyright 2018 Kelly Kearney
 
