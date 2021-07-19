@@ -16,6 +16,9 @@ function u = idw(uobs, d, p, dmax)
 %
 %   p:      power parameter
 %
+%   dmax:   maximum distance, any points beyond this distance will not be
+%           included in the weighting
+%
 % Output variables:
 %
 %   u:      n x m x ... array, interpolated value
