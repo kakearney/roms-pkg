@@ -4,6 +4,10 @@ function hp = plotromsrho(Grd, data, axflag)
 % hp = plotromsrho(Grd, data)
 % hp = plotromsrho(Grd, data, flag)
 %
+% This function is a quick wrapper to create a projected pcolor plot of a
+% horizontal slice of ROMS data, using the lat_psi and lon_psi coordinates
+% in the grid file structure.   
+%
 % Input variables:
 %
 %   Grd:    grid file structure
