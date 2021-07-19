@@ -40,6 +40,8 @@ function Log = parseromslog(file, varargin)
 %                           variable name restrictions. A Date column is
 %                           added that converts the Day+Time fields to a
 %                           datetime based on the model reference time.
+%
+%               numcpu:     number of CPUs used (possibly mox-specific)
 
 
 p = inputParser;
@@ -56,8 +58,18 @@ txt = regexp(txt, '\n', 'split')';
 
 % Remove Node startup stuff
 
-isnode = startsWith(txt, ' Node #');
+% isnode = startsWith(txt, ' Node #');
+isnode = regexpfound(txt, '\s+Node\s+\#');
+
+nodetxt = txt(isnode);
 txt = txt(~isnode);
+
+% Parse number of nodes
+
+nodenum = regexp(nodetxt, 'Node\s*#([\s\d]*)', 'tokens', 'once');
+nodenum = cellfun(@(x) str2num(x{1}), nodenum);
+Log.numcpu = length(unique(nodenum));
+
 
 % Parse clock start and end time
 
