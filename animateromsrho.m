@@ -12,7 +12,7 @@ function h = animateromsrho(grdfile, bhis, this, varargin) %bsta, tsta, slat, sl
 %
 %   grdfile:    path to roms grid file
 %
-%   Grd:        ROMS grid file structure array (see ncreads)
+%   Grd:        ROMS grid file structure array (see ncstruct)
 %
 %   bhis:       nxi x neta x nt array of values to be animated
 %
@@ -61,7 +61,7 @@ slon = p.Results.slon;
 if isstruct(grdfile)
     Grd = grdfile;
 elseif ischar(grdfile) && exist(grdfile, 'file')
-    Grd = ncreads(grdfile);
+    Grd = ncstruct(grdfile);
 else
     error('grdfile input must be ROMS gridfile structure or grid file name');
 end
