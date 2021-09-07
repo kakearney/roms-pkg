@@ -1,8 +1,8 @@
 function Nc = ncschema_addvars(Nc, varargin)
 %NCSCHEMA_ADDVARS Add variable info to a netCDF file schema
 %
-% Nc = ncschema_addvars(vname, dimnames, atts, type)
-% Nc = ncschema_addvars(vname, dimnames, atts, type, len)
+% Nc = ncschema_addvars(Nc, vname, dimnames, atts, type)
+% Nc = ncschema_addvars(Nc, vname, dimnames, atts, type, len)
 % 
 % Input variables:
 %
