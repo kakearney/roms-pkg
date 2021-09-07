@@ -1,4 +1,4 @@
-function ncbuild(var, file, varargin)
+function ncbuild(file, var, varargin)
 %NCBUILD Build a netCDF file around a Matlab variable
 %
 % This function simplifies the process of creating, extending, and writing
@@ -9,15 +9,15 @@ function ncbuild(var, file, varargin)
 % complicating factors (data size reasonable, no partial hyperslab writes,
 % no ambiguous dimension sizes, etc.)
 %
-% ncbuild(var, file)
-% ncbuild(var, file, param1, val1, ...)
+% ncbuild(file, var)
+% ncbuild(file, var, param1, val1, ...)
 %
 % Input variables:
 %
-%   var:        variable data to be written to the file
-%
 %   file:       name of netCDF file, will be created if it doesn't already
 %               exist
+%
+%   var:        variable data to be written to the file
 %
 % Optional input variables (passed as parameter/value pairs):
 %
@@ -27,7 +27,7 @@ function ncbuild(var, file, varargin)
 %               name, 'variableX' will be used, where X is the counter
 %               number of variables in the file once variableX is added. 
 %
-%   dimnames:   string array or cell array of strings, dimension names
+%   dimnames:   string array or cell array of strings/char, dimension names
 %               corresponding to the dimensions of the variable data.  If
 %               not included, dimensions of unique length will be labeled
 %               'i', 'j', 'k', etc.
@@ -38,7 +38,7 @@ function ncbuild(var, file, varargin)
 %   fileatts:   cell array of name/value global file attribute pairs (see
 %               attribstruct input description for details)
 %
-%   unlimited:  string array or cell array of strings matching the
+%   unlimited:  string array or cell array of strings/char matching the
 %               names of dimensions that should be unlimited.  Note that
 %               for classic files, and many netCDF conventions, only one
 %               dimension can be unlimited.  Default: none
@@ -80,7 +80,7 @@ p.parse(varargin{:});
 Opt = p.Results;
 
 if isempty(Opt.name)
-    Opt.name = inputname(1);
+    Opt.name = inputname(2);
     if isempty(Opt.name)
         if exist(file, 'file')
             ncid = netcdf.open(file,'NOWRITE');
@@ -99,6 +99,8 @@ end
 
 cellfun(@(x) validateattributes(x, {'char','string'}, {'scalartext'}), Opt.dimnames);
 cellfun(@(x) validateattributes(x, {'char','string'}, {'scalartext'}), Opt.unlimited);
+
+validateattributes(var, {'numeric','char','string'}, {}, 'ncbuild', 'var');
 
 %----------------------
 % Build (or add to) 
