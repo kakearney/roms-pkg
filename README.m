@@ -4,58 +4,57 @@
 % This repository holds a loose collections of utilities I've written to
 % interact with output from the <https://www.myroms.org Regional Ocean
 % Modeling System (ROMS)>, a widely-used primitive-equations ocean model.
-% The primary functions can be found in the
-%
-% Paragraph description for this function or suite of functions.
 %
 %% Getting started
 %
 % *Prerequisites*
 %
-% This function requires Matlab R14 or later.
+% For full functionality, these tools require Matlab R2012a or later with
+% the Mapping, Statistics, and Image Processing Toolboxes.
 %
 % *Downloading and installation*
 %
-% This code can be downloaded from <https://github.com/kakearney/example-pkg/ Github>
-% or the
-% <http://www.mathworks.com/matlabcentral/fileexchange/xxxx-example
-% MatlabCentral File Exchange>.  The File Exchange entry is updated daily
-% from the GitHub repository.   
+% This code can be downloaded from <https://github.com/kakearney/roms-pkg/ Github>. 
 %
 % *Matlab Search Path*
 %
 % The following folders need to be added to your Matlab Search path (via
 % |addpath|, |pathtool|, etc.):
 %
-%   roms-pkg/roms
-%   roms-pkg/cellstr2
-%   roms-pkg/minmax
-%   roms-pkg/regexpfound
-%   roms-pkg/setgetpos_V1.2
+%  roms-pkg/roms
+%  roms-pkg/cellstr2
+%  roms-pkg/minmax
+%  roms-pkg/regexpfound
+%  roms-pkg/setgetpos_V1.2
 %
-% The primary functions for this toolbox can be found in the roms folder,
-% with additional child functions called by these within the remaining
-% folders.
+% The primary functions for this toolbox can be found in the roms folder; 
+% the remaining folders hold dependent functions used by thse primary ones.
+%
+% In addition to the dependencies listed above, some roms-pkg functions rely
+% on the netCDF-reading utilities from the
+% <https://github.com/chadagreene/CDT Climate Data Toolbox>; I 
+% highly recommend users download this entire toolbox for its extra
+% netCDF utilities and its variety of plotting and analysis functions that
+% can aid in working with ROMS output datasets.  Finally, the ROMS folder
+% includes two utility functions, |stretching| and |set_depth|, that are
+% copied over from the <https://www.myroms.org/wiki/Matlab_Scripts
+% myroms.org Matlab Scripts>; personally, I'm not a fan of this toolbox due
+% to its clunky syntax, but it's useful to have handy occasionally if you
+% work with ROMS output.
 
 %% Functions
 %
-% * 
-%
-%  y = example(x)
-%
-% Input variables:
-%
-% * 
-% * 
-
-%% Examples
-
-% Here's some example code, with an image
-
-x = 1:10;
-y = x.^2
-
-plot(x,y);
+% * |plotromsrho|: Plot a 2D slice of a rho variable to projected pcolor
+%   plot
+% * |animateromsrho|: Animate a 2D slice of a rho variable over time
+% * |calcromsz|: Calculate rho- and w-depth values based on bottom depth
+%   and surface height
+% * |romsboundarycoords|: Extract boundary slices from 4D grid
+% * |romsgeometryparams|: Calculate various grid-related geometry
+%   parameters
+% * |parsevarinfo|: Read data from a varinfo.dat file into a table
+% * |parseromslog|: Read archived standard output text from from a ROMS
+%   simulation
 
 %% Contributions
 %
