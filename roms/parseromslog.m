@@ -6,6 +6,9 @@ function Log = parseromslog(file, varargin)
 % information... setup details, input parameters, file reads and writes,
 % etc.  This function parses some of that data.
 %
+% Note: This function was designed for the roms-bering-sea code, which uses
+% ROMS code circa version 3.2.
+%
 % Input variables:
 %
 %   file:       name of text file where ROMS standard output was saved.
