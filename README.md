@@ -41,9 +41,12 @@ The following folders need to be added to your Matlab Search path (via `addpath`
 ```
 roms-pkg/roms
 roms-pkg/cellstr2
+roms-pkg/invdisweight
+roms-pkg/mask2poly
 roms-pkg/minmax
 roms-pkg/regexpfound
 roms-pkg/setgetpos_V1.2
+roms-pkg/ConsoleProgressBar
 ```
 
 
@@ -65,6 +68,7 @@ In addition to the dependencies listed above, some roms-pkg functions rely on th
   - `romsgeometryparams`: Calculate various grid-related geometry   parameters
   - `parsevarinfo`: Read data from a varinfo.dat file into a table
   - `parseromslog`: Read archived standard output text from from a ROMS   simulation
+  - `oceandata2romsgrd`: Regrid global gridded ocean data to a ROMS grid
 
 
 ## Contributions

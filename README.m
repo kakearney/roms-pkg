@@ -23,9 +23,12 @@
 %
 %  roms-pkg/roms
 %  roms-pkg/cellstr2
+%  roms-pkg/invdisweight
+%  roms-pkg/mask2poly
 %  roms-pkg/minmax
 %  roms-pkg/regexpfound
 %  roms-pkg/setgetpos_V1.2
+%  roms-pkg/ConsoleProgressBar
 %
 % The primary functions for this toolbox can be found in the roms folder; 
 % the remaining folders hold dependent functions used by thse primary ones.
@@ -55,6 +58,7 @@
 % * |parsevarinfo|: Read data from a varinfo.dat file into a table
 % * |parseromslog|: Read archived standard output text from from a ROMS
 %   simulation
+% * |oceandata2romsgrd|: Regrid global gridded ocean data to a ROMS grid
 
 %% Contributions
 %
