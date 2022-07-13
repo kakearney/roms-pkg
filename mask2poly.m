@@ -73,7 +73,10 @@ xyedge(~isokay,:) = xyedge(~isokay, [2 1 4 3]);
 
 % Locate the edges only repeated once; these are the perimeter edges
 
-[unqedge, nedge] = consolidator(xyedge, [], 'count');
+[unqedge, ~, iunq] = unique(xyedge, 'rows');
+nedge = histcounts(iunq, 1:max(iunq)+1);
+
+% [unqedge2, nedge2] = consolidator(xyedge, [], 'count');
 xunq = unqedge(nedge==1, 1:2);
 yunq = unqedge(nedge==1, 3:4);
 
