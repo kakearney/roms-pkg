@@ -74,7 +74,7 @@ end
 
 function v = makevtable(x)
     v = cell2table(x, 'VariableNames', ...
-        {'fieldname', 'longname', 'units', 'type', 'timevar', 'index', 'cgrid', 'scale'});
+        {'variable', 'long_name', 'units', 'field', 'time', 'index_code', 'type', 'scale'});
 end
 
 function x = unpackcell(x)
