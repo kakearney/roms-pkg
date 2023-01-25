@@ -122,6 +122,7 @@ V.ocean = c2t({...
      'temp'         'r3' 'double'  'potential temperature'                      'Celsius'        {'_FillValue', Opt.fillvalue}
      'salt'         'r3' 'double'  'salinity'                                   ''               {'_FillValue', Opt.fillvalue}
      });
+V.ocean = fixatts(V.ocean);
 
 V.ice = c2t({...                                                                           
      'uice'         'u2' 'double'  'u-component of ice velocity'                  'meter second-1' {'_FillValue', Opt.fillvalue}
@@ -138,6 +139,7 @@ V.ice = c2t({...
      's0mk'         'r2' 'double'  'salinity of molecular sub-layer under ice'    ''               {'_FillValue', Opt.fillvalue}
      't0mk'         'r2' 'double'  'temperature of molecular sub-layer under ice' 'Celsius'        {'_FillValue', Opt.fillvalue}
      });
+ V.ice = fixatts(V.ice);
     
  
  V.BEST_NPZ = c2t({...
@@ -164,6 +166,7 @@ V.ice = c2t({...
      'TIC'          'r3' 'double'  'total inorganic carbon'                       'mmol C m^-3'    {'_FillValue', Opt.fillvalue}
      'oxygen'       'r3' 'double'  'dissolved oxygen concentration'               'mmol O m^-3'    {'_FillValue', Opt.fillvalue}    
     });
+V.BEST_NPZ = fixatts(V.BEST_NPZ);
  
 V.BIO_COBALT = c2t({...
      'nsm'            'r3' 'double' 'Small Phytoplankton Nitrogen'              'mol/kg'           {'_FillValue', Opt.fillvalue}
@@ -217,7 +220,7 @@ V.BIO_COBALT = c2t({...
      'mu_mem_lg'      'r3' 'double' 'Aggreg memory large phyto'                 ''                 {'_FillValue', Opt.fillvalue}
      'mu_mem_md'      'r3' 'double' 'Aggreg memory medium phyto'                ''                 {'_FillValue', Opt.fillvalue}
     });
-
+V.BIO_COBALT = fixatts(V.BIO_COBALT);
 
 V.BIO_BANAS =  c2t({...
      'phyto'          'r3' 'double'  'phytoplankton'                    'mmol N m^-3' {'_FillValue', Opt.fillvalue}
@@ -227,6 +230,7 @@ V.BIO_BANAS =  c2t({...
      'NH4'            'r3' 'double'  'ammonium'                         'mmol N m^-3' {'_FillValue', Opt.fillvalue}
      'NO3'            'r3' 'double'  'nitrate'                          'mmol N m^-3' {'_FillValue', Opt.fillvalue}
     });
+V.BIO_BANAS = fixatts(V.BIO_BANAS);
 
 V.commonbgc = c2t({...
     'ones'            'r3' 'double' 'generic tracer'                   'tracer units' {'_FillValue', Opt.fillvalue}
@@ -239,3 +243,16 @@ V.commonbgc = c2t({...
     'alkalinity'      'r3' 'double' 'alkalinity'                       'umol/kg'      {'_FillValue', Opt.fillvalue}
     'oxygen'          'r3' 'double' 'oxygen'                           'umol/kg'      {'_FillValue', Opt.fillvalue}
     });
+V.commonbgc = fixatts(V.commonbgc);
+
+
+function tbl = fixatts(tbl)
+%FIXATTS Fix attribute formatting
+%
+% Enforce atts column to be an nx1 cell array, even if all rows include
+% same-sized cell arrays.
+
+for ii = 1:height(tbl)
+    tbl.atts{ii,1} =  tbl.atts(ii,:);
+end
+tbl.atts = tbl.atts(:,1);
