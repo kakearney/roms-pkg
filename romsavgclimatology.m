@@ -27,7 +27,19 @@ function [Out, Aligned] = romsavgclimatology(yavg, tavg, varargin)
 %
 %   realign:    logical scalar, if true, also returns the timeseries
 %               realigned into a nyear x nbin array corresponding to the
-%               bins used to calculate the climatology.
+%               bins used to calculate the climatology. [false]
+%
+%   pivotmonth: month of date where we place the break point from one
+%               "year" to the next [1]
+%
+%   pivotday:   day of date where we place the break point from one
+%               "year" to the next [1]
+%
+%   dtavg:      scalar duration, time step of averages time series.  If not 
+%               included, will use the mean difference between t values,
+%               but that estimation will not work properly if there are any
+%               larger spaces that represent gaps instead of longer
+%               averaging intervals. [mean(diff(tavg))]   
 %
 % Output variables:
 %
@@ -56,6 +68,7 @@ p.addParameter('prctile', [25 50 75], @(x) validateattributes(x, {'numeric'}, {'
 p.addParameter('realign', false, @(x) validateattributes(x, {'logical'}, {'scalar'}));
 p.addParameter('pivotmonth', 1, @(x) validateattributes(x, {'numeric'}, {'vector', 'integer', '<=', 12, '>=', 1}));
 p.addParameter('pivotday', 1, @(x) validateattributes(x, {'numeric'}, {'vector', 'integer', '<=', 31, '>=', 1}));
+p.addParameter('dtavg', NaN, @(x) validateattributes(x, {'duration'}, {'scalar'}));
 p.parse(varargin{:});
 
 Opt = p.Results;
@@ -66,7 +79,11 @@ isn = isnan(yavg);
 yavg = yavg(~isn);
 tavg = tavg(~isn);
 
-dtavg = mean(diff(tavg));
+if isnan(Opt.dtavg)
+    dtavg = mean(diff(tavg));
+else
+    dtavg = Opt.dtavg;
+end
 
 % Determine years in timeseries (adjusting as necessary to account for a
 % shifted pivot date)
@@ -163,7 +180,7 @@ nprc = length(Opt.prctile);
 
 Out.prc = nan(nprc, Opt.nbin);
 for ii = 1:Opt.nbin
-    if ~all(isnan(weight(:,ii)))
+    if ~all(isnan(weight(:,ii))) && size(weight,1)>1
         Out.prc(:,ii) = wprctile(yavg, Opt.prctile, weight(:,ii), 5);
     end
 end

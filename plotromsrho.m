@@ -28,3 +28,4 @@ if axflag
 end
     
 hp = pcolorm(Grd.lat_psi, Grd.lon_psi, padarray(data(2:end-1,2:end-1), [1 1], NaN, 'post'));
+
