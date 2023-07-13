@@ -107,7 +107,8 @@ p.addParameter('Vstretching', 1,   @(x) validateattributes(x, {'numeric'}, {'sca
 p.addParameter('theta_s',     5,   @(x) validateattributes(x, {'numeric'}, {'scalar'}));
 p.addParameter('theta_b',     0.4, @(x) validateattributes(x, {'numeric'}, {'scalar'}));
 p.addParameter('hc',         10,   @(x) validateattributes(x, {'numeric'}, {'scalar'}));
-p.addParameter('tref', datenum(1900,1,1), @(x) validateattributes(x, {'numeric'}, {'scalar'}));
+p.addParameter('tref', datenum(1900,1,1), @(x) validateattributes(x, {'numeric', 'datetime'}, {'scalar'}));
+p.addParameter('Tcline',     10,   @(x) validateattributes(x, {'numeric'}, {'scalar'}));
 
 p.parse(varargin{:});
 S = p.Results;
