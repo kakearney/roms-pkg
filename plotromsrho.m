@@ -22,10 +22,20 @@ if nargin < 3
 end
 
 if axflag
-    latlim = minmax(Grd.lat_rho);
-    lonlim = minmax(Grd.lon_rho);
+    latlim = double(minmax(Grd.lat_rho));
+    lonlim = double(minmax(Grd.lon_rho));
     worldmap(latlim, lonlim);
 end
     
-hp = pcolorm(Grd.lat_psi, Grd.lon_psi, padarray(data(2:end-1,2:end-1), [1 1], NaN, 'post'));
+% hp = pcolorm(double(Grd.lat_psi), double(Grd.lon_psi), double(padarray(data(2:end-1,2:end-1), [1 1], NaN, 'post')));
+hp = pcolorm(double(Grd.lat_psi), double(Grd.lon_psi), double(padend(data(2:end-1,2:end-1))));
+
+
+function x = padend(x)
+
+x = [x nan(size(x,1),1); nan(1,size(x,2)+1)];
+
+end
+
+end
 
