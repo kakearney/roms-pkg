@@ -138,7 +138,9 @@ h.ref = plot(tsta([1 1]), stalim, 'k');
 
 h.mapax = axes('position', [0.05 0.15 0.9 0.8]);
 worldmap(latlim, lonlim);
-h.pc = pcolorm(Grd.lat_psi, Grd.lon_psi, padarray(bhis(2:end-1,2:end-1,1), [1 1], NaN, 'post'));
+
+h.pc   = pcolorm(double(Grd.lat_psi), double(Grd.lon_psi), double(padend(bhis(2:end-1,2:end-1,1))));
+% h.pc = pcolorm(Grd.lat_psi, Grd.lon_psi, padarray(bhis(2:end-1,2:end-1,1), [1 1], NaN, 'post'));
 for ii = 1:length(slat)
     h.sta(ii) = plotm(slat(ii), slon(ii), 'o');
 end
@@ -198,7 +200,8 @@ set(h.fig, 'DeleteFcn', @closefig);
         [~,ihis] = min(abs(t - this));
         [~,ista] = min(abs(t - tsta));
         
-        set(h.pc, 'cdata', padarray(bhis(2:end-1,2:end-1,ihis), [1 1], NaN, 'post'));
+        % set(h.pc, 'cdata', padarray(bhis(2:end-1,2:end-1,ihis), [1 1], NaN, 'post'));
+        set(h.pc, 'cdata', double(padend(bhis(2:end-1,2:end-1,ihis))));
         if verLessThan('matlab', '9.1')
             set(h.ref, 'xdata', datenum(tsta([ista ista])));
         else
@@ -235,6 +238,10 @@ set(h.fig, 'DeleteFcn', @closefig);
     function closefig(src,ev)
         stop(t);
         delete(t);
+    end
+
+    function x = padend(x)
+        x = [x nan(size(x,1),1); nan(1,size(x,2)+1)];
     end
 
 end
