@@ -53,7 +53,7 @@ roms-pkg/ConsoleProgressBar
 The primary functions for this toolbox can be found in the roms folder; the remaining folders hold dependent functions used by thse primary ones.
 
 
-In addition to the dependencies listed above, some roms-pkg functions rely on the netCDF-reading utilities from the [Climate Data Toolbox](https://github.com/chadagreene/CDT); I highly recommend users download this entire toolbox for its extra netCDF utilities and its variety of plotting and analysis functions that can aid in working with ROMS output datasets.  Finally, the ROMS folder includes two utility functions, `stretching` and `set_depth`, that are copied over from the [myroms.org Matlab Scripts](https://www.myroms.org/wiki/Matlab_Scripts); personally, I'm not a fan of this toolbox due to its clunky syntax, but it's useful to have handy occasionally if you work with ROMS output.
+In addition to the dependencies listed above, some roms-pkg functions rely on the netCDF-reading utilities from the [Climate Data Toolbox](https://github.com/chadagreene/CDT); I highly recommend users download this entire toolbox for its extra netCDF utilities and its variety of plotting and analysis functions that can aid in working with ROMS output datasets. Finally, the ROMS folder includes two utility functions, `stretching` and `set_depth`, that are copied over from the [myroms.org Matlab Scripts](https://www.myroms.org/wiki/Matlab_Scripts); personally, I'm not a fan of this toolbox due to its clunky syntax, but it's useful to have handy occasionally if you work with ROMS output.
 
 
 
@@ -61,14 +61,21 @@ In addition to the dependencies listed above, some roms-pkg functions rely on th
 
 
 
-  - `plotromsrho`: Plot a 2D slice of a rho variable to projected pcolor   plot
+  - `plotromsrho`: Plot a 2D slice of a rho variable to projected pcolor plot
   - `animateromsrho`: Animate a 2D slice of a rho variable over time
-  - `calcromsz`: Calculate rho- and w-depth values based on bottom depth   and surface height
+  - `calcromsz`: Calculate rho- and w-depth values based on bottom depth and surface height
   - `romsboundarycoords`: Extract boundary slices from 4D grid
-  - `romsgeometryparams`: Calculate various grid-related geometry   parameters
+  - `romsgeometryparams`: Calculate various grid-related geometry parameters
   - `parsevarinfo`: Read data from a varinfo.dat file into a table
-  - `parseromslog`: Read archived standard output text from from a ROMS   simulation
+  - `parseromslog`: Read archived standard output text from from a ROMS simulation
   - `oceandata2romsgrd`: Regrid global gridded ocean data to a ROMS grid
+  - `bry_schema`: Build a netCDF file schema for a ROMS boundary file
+  - `ini_schema`: Build a netCDF file schema for a ROMS initialization file
+  - `nud_schema`: Build a netCDF file schema for a ROMS nudging file
+  - `romsavgclimatology`: Calculate climatology from ROMS averages output
+  - `romsmask2scs`: Returns netCDF start/count/stride hyperslab info (across all ROMS dimensions) encompassing all true values in a rho-grid mask
+  - `romstransect`: extracts xi- and eta-vs-depth transects from 3D ROMS output in distance-along-transect (km) and depth (m) coordinates
+  - `romsvariablegroups`: Returns tables of ROMS variables associated with common modules
 
 
 ## Contributions
@@ -92,4 +99,4 @@ I do monitor the MatlabCentral FileExchange entry for any issues raised in the c
 
 
 
-<sub>[Published with MATLAB R2019a]("http://www.mathworks.com/products/matlab/")</sub>
+<sub>[Published with MATLAB R2024a]("http://www.mathworks.com/products/matlab/")</sub>

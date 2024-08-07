@@ -59,6 +59,17 @@
 % * |parseromslog|: Read archived standard output text from from a ROMS
 %   simulation
 % * |oceandata2romsgrd|: Regrid global gridded ocean data to a ROMS grid
+% * |bry_schema|: Build a netCDF file schema for a ROMS boundary file
+% * |ini_schema|: Build a netCDF file schema for a ROMS initialization file
+% * |nud_schema|: Build a netCDF file schema for a ROMS nudging file
+% * |romsavgclimatology|: Calculate climatology from ROMS averages output
+% * |romsmask2scs|: Returns netCDF start/count/stride hyperslab info
+%   (across all ROMS dimensions) encompassing all true values in a rho-grid
+%   mask
+% * |romstransect|: extracts xi- and eta-vs-depth transects from 3D ROMS
+%   output in distance-along-transect (km) and depth (m) coordinates
+% * |romsvariablegroups|: Returns tables of ROMS variables associated with
+%   common modules
 
 %% Contributions
 %

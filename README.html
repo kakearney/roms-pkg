@@ -1,13 +1,18 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Some ROMS utilities</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-07-13"><meta name="DC.source" content="tp237f57b1_b3f1_4bfd_a185_7f8d0ed89f47.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      -->
+<title>Some ROMS utilities</title>
+<meta name="generator" content="MATLAB 24.1">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2024-08-07">
+<meta name="DC.source" content="tp029c67d9_149e_4d3d_ae73_11b49275d1e6.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +28,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +57,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,14 +72,106 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Some ROMS utilities</h1><!--introduction--><p>Author: Kelly Kearney</p><p>This repository holds a loose collections of utilities I've written to interact with output from the <a href="https://www.myroms.org">Regional Ocean Modeling System (ROMS)</a>, a widely-used primitive-equations ocean model.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Getting started</a></li><li><a href="#2">Functions</a></li><li><a href="#3">Contributions</a></li></ul></div><h2 id="1">Getting started</h2><p><b>Prerequisites</b></p><p>For full functionality, these tools require Matlab R2012a or later with the Mapping, Statistics, and Image Processing Toolboxes.</p><p><b>Downloading and installation</b></p><p>This code can be downloaded from <a href="https://github.com/kakearney/roms-pkg/">Github</a>.</p><p><b>Matlab Search Path</b></p><p>The following folders need to be added to your Matlab Search path (via <tt>addpath</tt>, <tt>pathtool</tt>, etc.):</p><pre>roms-pkg/roms
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>Some ROMS utilities</h1>
+<!--introduction-->
+<p>Author: Kelly Kearney</p>
+<p>This repository holds a loose collections of utilities I've written to interact with output from the <a href="https://www.myroms.org">Regional Ocean Modeling System (ROMS)</a>, a widely-used primitive-equations ocean model.</p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">Getting started</a>
+</li>
+<li>
+<a href="#2">Functions</a>
+</li>
+<li>
+<a href="#3">Contributions</a>
+</li>
+</ul>
+</div>
+<h2 id="1">Getting started</h2>
+<p>
+<b>Prerequisites</b>
+</p>
+<p>For full functionality, these tools require Matlab R2012a or later with the Mapping, Statistics, and Image Processing Toolboxes.</p>
+<p>
+<b>Downloading and installation</b>
+</p>
+<p>This code can be downloaded from <a href="https://github.com/kakearney/roms-pkg/">Github</a>.</p>
+<p>
+<b>Matlab Search Path</b>
+</p>
+<p>The following folders need to be added to your Matlab Search path (via <tt>addpath</tt>, <tt>pathtool</tt>, etc.):</p>
+<pre>roms-pkg/roms
 roms-pkg/cellstr2
 roms-pkg/invdisweight
 roms-pkg/mask2poly
 roms-pkg/minmax
 roms-pkg/regexpfound
 roms-pkg/setgetpos_V1.2
-roms-pkg/ConsoleProgressBar</pre><p>The primary functions for this toolbox can be found in the roms folder; the remaining folders hold dependent functions used by thse primary ones.</p><p>In addition to the dependencies listed above, some roms-pkg functions rely on the netCDF-reading utilities from the <a href="https://github.com/chadagreene/CDT">Climate Data Toolbox</a>; I highly recommend users download this entire toolbox for its extra netCDF utilities and its variety of plotting and analysis functions that can aid in working with ROMS output datasets.  Finally, the ROMS folder includes two utility functions, <tt>stretching</tt> and <tt>set_depth</tt>, that are copied over from the <a href="https://www.myroms.org/wiki/Matlab_Scripts">myroms.org Matlab Scripts</a>; personally, I'm not a fan of this toolbox due to its clunky syntax, but it's useful to have handy occasionally if you work with ROMS output.</p><h2 id="2">Functions</h2><div><ul><li><tt>plotromsrho</tt>: Plot a 2D slice of a rho variable to projected pcolor   plot</li><li><tt>animateromsrho</tt>: Animate a 2D slice of a rho variable over time</li><li><tt>calcromsz</tt>: Calculate rho- and w-depth values based on bottom depth   and surface height</li><li><tt>romsboundarycoords</tt>: Extract boundary slices from 4D grid</li><li><tt>romsgeometryparams</tt>: Calculate various grid-related geometry   parameters</li><li><tt>parsevarinfo</tt>: Read data from a varinfo.dat file into a table</li><li><tt>parseromslog</tt>: Read archived standard output text from from a ROMS   simulation</li><li><tt>oceandata2romsgrd</tt>: Regrid global gridded ocean data to a ROMS grid</li></ul></div><h2 id="3">Contributions</h2><p>Community contributions to this package are welcome!</p><p>To report bugs, please submit <a href="https://github.com/kakearney/example-pkg/issues">an issue</a> on GitHub and include:</p><div><ul><li>your operating system</li><li>your version of Matlab and all relevant toolboxes (type <tt>ver</tt> at the Matlab command line to get this info)</li><li>code/data to reproduce the error or buggy behavior, and the full text of any error messages received</li></ul></div><p>Please also feel free to submit enhancement requests, or to send pull requests (via GitHub) for bug fixes or new features.</p><p>I do monitor the MatlabCentral FileExchange entry for any issues raised in the comments, but would prefer to track issues on GitHub.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+roms-pkg/ConsoleProgressBar</pre>
+<p>The primary functions for this toolbox can be found in the roms folder; the remaining folders hold dependent functions used by thse primary ones.</p>
+<p>In addition to the dependencies listed above, some roms-pkg functions rely on the netCDF-reading utilities from the <a href="https://github.com/chadagreene/CDT">Climate Data Toolbox</a>; I highly recommend users download this entire toolbox for its extra netCDF utilities and its variety of plotting and analysis functions that can aid in working with ROMS output datasets. Finally, the ROMS folder includes two utility functions, <tt>stretching</tt> and <tt>set_depth</tt>, that are copied over from the <a href="https://www.myroms.org/wiki/Matlab_Scripts">myroms.org Matlab Scripts</a>; personally, I'm not a fan of this toolbox due to its clunky syntax, but it's useful to have handy occasionally if you work with ROMS output.</p>
+<h2 id="2">Functions</h2>
+<div>
+<ul>
+<li>
+<tt>plotromsrho</tt>: Plot a 2D slice of a rho variable to projected pcolor plot</li>
+<li>
+<tt>animateromsrho</tt>: Animate a 2D slice of a rho variable over time</li>
+<li>
+<tt>calcromsz</tt>: Calculate rho- and w-depth values based on bottom depth and surface height</li>
+<li>
+<tt>romsboundarycoords</tt>: Extract boundary slices from 4D grid</li>
+<li>
+<tt>romsgeometryparams</tt>: Calculate various grid-related geometry parameters</li>
+<li>
+<tt>parsevarinfo</tt>: Read data from a varinfo.dat file into a table</li>
+<li>
+<tt>parseromslog</tt>: Read archived standard output text from from a ROMS simulation</li>
+<li>
+<tt>oceandata2romsgrd</tt>: Regrid global gridded ocean data to a ROMS grid</li>
+<li>
+<tt>bry_schema</tt>: Build a netCDF file schema for a ROMS boundary file</li>
+<li>
+<tt>ini_schema</tt>: Build a netCDF file schema for a ROMS initialization file</li>
+<li>
+<tt>nud_schema</tt>: Build a netCDF file schema for a ROMS nudging file</li>
+<li>
+<tt>romsavgclimatology</tt>: Calculate climatology from ROMS averages output</li>
+<li>
+<tt>romsmask2scs</tt>: Returns netCDF start/count/stride hyperslab info (across all ROMS dimensions) encompassing all true values in a rho-grid mask</li>
+<li>
+<tt>romstransect</tt>: extracts xi- and eta-vs-depth transects from 3D ROMS output in distance-along-transect (km) and depth (m) coordinates</li>
+<li>
+<tt>romsvariablegroups</tt>: Returns tables of ROMS variables associated with common modules</li>
+</ul>
+</div>
+<h2 id="3">Contributions</h2>
+<p>Community contributions to this package are welcome!</p>
+<p>To report bugs, please submit <a href="https://github.com/kakearney/example-pkg/issues">an issue</a> on GitHub and include:</p>
+<div>
+<ul>
+<li>your operating system</li>
+<li>your version of Matlab and all relevant toolboxes (type <tt>ver</tt> at the Matlab command line to get this info)</li>
+<li>code/data to reproduce the error or buggy behavior, and the full text of any error messages received</li>
+</ul>
+</div>
+<p>Please also feel free to submit enhancement requests, or to send pull requests (via GitHub) for bug fixes or new features.</p>
+<p>I do monitor the MatlabCentral FileExchange entry for any issues raised in the comments, but would prefer to track issues on GitHub.</p>
+<p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2024a</a>
+<br>
+</p>
+</div>
+<!--
 ##### SOURCE BEGIN #####
 %% Some ROMS utilities
 % Author: Kelly Kearney
@@ -136,6 +234,17 @@ roms-pkg/ConsoleProgressBar</pre><p>The primary functions for this toolbox can b
 % * |parseromslog|: Read archived standard output text from from a ROMS
 %   simulation
 % * |oceandata2romsgrd|: Regrid global gridded ocean data to a ROMS grid
+% * |bry_schema|: Build a netCDF file schema for a ROMS boundary file
+% * |ini_schema|: Build a netCDF file schema for a ROMS initialization file
+% * |nud_schema|: Build a netCDF file schema for a ROMS nudging file
+% * |romsavgclimatology|: Calculate climatology from ROMS averages output
+% * |romsmask2scs|: Returns netCDF start/count/stride hyperslab info
+%   (across all ROMS dimensions) encompassing all true values in a rho-grid
+%   mask
+% * |romstransect|: extracts xi- and eta-vs-depth transects from 3D ROMS
+%   output in distance-along-transect (km) and depth (m) coordinates
+% * |romsvariablegroups|: Returns tables of ROMS variables associated with
+%   common modules
 
 %% Contributions
 %
@@ -158,4 +267,6 @@ roms-pkg/ConsoleProgressBar</pre><p>The primary functions for this toolbox can b
 
 
 ##### SOURCE END #####
---></body></html>
+-->
+</body>
+</html>
