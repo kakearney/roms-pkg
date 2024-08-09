@@ -65,7 +65,7 @@ function [Out, Aligned] = romsavgclimatology(yavg, tavg, varargin)
 p = inputParser;
 p.addParameter('nbin', 52, @(x) validateattributes(x, {'numeric'}, {'integer', 'positive'}));
 p.addParameter('prctile', [25 50 75], @(x) validateattributes(x, {'numeric'}, {'vector', '>=', 0, '<=', 100}));
-p.addParameter('realign', false, @(x) validateattributes(x, {'logical'}, {'scalar'}));
+p.addParameter('realign', nargin>1, @(x) validateattributes(x, {'logical'}, {'scalar'}));
 p.addParameter('pivotmonth', 1, @(x) validateattributes(x, {'numeric'}, {'vector', 'integer', '<=', 12, '>=', 1}));
 p.addParameter('pivotday', 1, @(x) validateattributes(x, {'numeric'}, {'vector', 'integer', '<=', 31, '>=', 1}));
 p.addParameter('dtavg', NaN, @(x) validateattributes(x, {'duration'}, {'scalar'}));
@@ -100,15 +100,6 @@ if tlim(2) <= datetime(year(tlim(2)),Opt.pivotmonth,Opt.pivotday)
 else
     t2 = datetime(year(tlim(2))+1,Opt.pivotmonth,Opt.pivotday);
 end
-
-% yrs = unique(year(tavg));
-% 
-% if min(tavg) < datetime(yrs(1), Opt.pivotmonth, Opt.pivotday)
-%     yrs = [yrs(1)-1; yrs];
-% end
-% if max(tavg) > datetime(yrs(end), Opt.pivotmonth, Opt.pivotday)
-%     yrs = [yrs; yrs(end)+1];
-% end
 
 yrs = year(t1):(year(t2)-1);
 
